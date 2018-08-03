@@ -17,32 +17,36 @@ class ItemServiceImpl(registry: PersistentEntityRegistry)
   private def refForInventory = registry.refFor[ItemInventoryEntity]("item-inventory")
 
   override def getCatalog: ServiceCall[NotUsed, Catalog] =
-    ServerServiceCall((_, _) =>
-      Future.successful(Catalog(Set.empty[Item], Set.empty[Bundle]))
-      .map(_.marshall)
+    ServiceCall(_ =>
+      refForInventory
+        .ask(GetInventory)
+        .map(inventory => Catalog(inventory.items, inventory.bundles))
     )
 
   override def addItem: ServiceCall[ItemRequest, Either[ErrorResponse, Item]] =
-    ServerServiceCall((_, _) =>
-      Future.successful(Left(ErrorResponse(501, "Not Implemented", "Soon available.")))
+    ServerServiceCall((_, request) =>
+      refForInventory
+        .ask(AddItem(UUID.randomUUID(), request.name, request.description, request.price))
         .map(_.marshall)
     )
 
   override def addBundle: ServiceCall[BundleRequest, Either[ErrorResponse, Bundle]] =
-    ServerServiceCall((_, _) =>
-      Future.successful(Left(ErrorResponse(501, "Not Implemented", "Soon available.")))
+    ServerServiceCall((_, request) =>
+      refForInventory
+        .ask(AddBundle(UUID.randomUUID(), request.name, request.items, request.price))
         .map(_.marshall)
     )
 
   override def removeItem(id: UUID): ServiceCall[NotUsed, Either[ErrorResponse, Item]] =
     ServerServiceCall((_, _) =>
-      Future.successful(Left(ErrorResponse(501, "Not Implemented", "Soon available.")))
+      refForInventory.ask(DeleteItem(id))
         .map(_.marshall)
     )
 
   override def removeBundle(id: UUID): ServiceCall[NotUsed, Either[ErrorResponse, Bundle]] =
     ServerServiceCall((_, _) =>
-      Future.successful(Left(ErrorResponse(501, "Not Implemented", "Soon available.")))
+      refForInventory
+        .ask(DeleteBundle(id))
         .map(_.marshall)
     )
 }

@@ -29,7 +29,7 @@ case class BundleRequest(name: String,
 object BundleRequest {
   implicit val reads: Reads[BundleRequest] = (
     (JsPath \ "name").read[String](minLength[String](2)) and
-      (JsPath \ "items").read[Iterable[UUID]](minLength[Iterable[UUID]](1)) and
+      (JsPath \ "items").read[Iterable[BundleRequestItem]](minLength[Iterable[BundleRequestItem]](1)) and
       (JsPath \ "price").read[Double](min[Double](0.01))
     )(BundleRequest.apply _)
 

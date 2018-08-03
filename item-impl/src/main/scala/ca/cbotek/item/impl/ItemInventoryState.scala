@@ -7,5 +7,12 @@ case class ItemInventoryState(items: Set[Item],
                               bundles: Set[Bundle])
 
 object ItemInventoryState {
+
   implicit val format: Format[ItemInventoryState] = Json.format[ItemInventoryState]
+
+  def empty: ItemInventoryState =
+    ItemInventoryState(
+      items = Set.empty[Item],
+      bundles = Set.empty[Bundle]
+    )
 }

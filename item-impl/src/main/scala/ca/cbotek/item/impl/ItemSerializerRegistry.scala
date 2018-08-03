@@ -9,9 +9,13 @@ object ItemSerializerRegistry extends JsonSerializerRegistry {
     // Command
     JsonSerializer[AddItem],
     JsonSerializer[DeleteItem],
+    JsonSerializer[AddBundle],
+    JsonSerializer[DeleteBundle],
     // Event
     JsonSerializer[ItemAdded],
     JsonSerializer[ItemDeleted],
+    JsonSerializer[BundleAdded],
+    JsonSerializer[BundleDeleted],
     // Model
     JsonSerializer[ItemInventoryState],
   )
