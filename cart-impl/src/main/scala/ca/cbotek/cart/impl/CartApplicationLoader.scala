@@ -1,6 +1,6 @@
-package ca.cbotek.item.impl
+package ca.cbotek.cart.impl
 
-import ca.cbotek.item.api.ItemService
+import ca.cbotek.cart.api.CartService
 import com.lightbend.lagom.scaladsl.api.Descriptor
 import com.lightbend.lagom.scaladsl.broker.kafka.LagomKafkaComponents
 import com.lightbend.lagom.scaladsl.client.ConfigurationServiceLocatorComponents
@@ -11,30 +11,29 @@ import com.lightbend.lagom.scaladsl.server._
 import com.softwaremill.macwire._
 import play.api.libs.ws.ahc.AhcWSComponents
 
-class ItemApplicationLoader extends LagomApplicationLoader {
+class CartApplicationLoader extends LagomApplicationLoader {
 
   override def load(context: LagomApplicationContext): LagomApplication =
-    new ItemApplication(context) with ConfigurationServiceLocatorComponents
+    new CartApplication(context) with ConfigurationServiceLocatorComponents
 
   override def loadDevMode(context: LagomApplicationContext): LagomApplication =
-    new ItemApplication(context) with LagomDevModeComponents
+    new CartApplication(context) with LagomDevModeComponents
 
-  override def describeService: Option[Descriptor] = Some(readDescriptor[ItemService])
+  override def describeService: Option[Descriptor] = Some(readDescriptor[CartService])
 }
 
-abstract class ItemApplication(context: LagomApplicationContext)
+abstract class CartApplication(context: LagomApplicationContext)
   extends LagomApplication(context)
     with CassandraPersistenceComponents
     with LagomKafkaComponents
     with AhcWSComponents {
 
   // Bind the services that this server provides
-  override lazy val lagomServer: LagomServer = serverFor[ItemService](wire[ItemServiceImpl])
+  override lazy val lagomServer: LagomServer = serverFor[CartService](wire[CartServiceImpl])
 
   // Register the JSON serializer registry
-  override lazy val jsonSerializerRegistry: JsonSerializerRegistry = ItemSerializerRegistry
+  override lazy val jsonSerializerRegistry: JsonSerializerRegistry = CartSerializerRegistry
 
-  persistentEntityRegistry.register(wire[ItemInventoryEntity])
-
-  wire[ItemInventoryInit]
+  persistentEntityRegistry.register(wire[CartEntity])
 }
+

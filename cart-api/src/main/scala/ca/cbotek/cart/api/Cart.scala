@@ -8,7 +8,6 @@ import play.api.libs.json.{Reads, _}
 
 case class Cart(id: UUID,
                 user: String, //user identifier
-                expiry: Long,
                 items: Set[CartItem])
 
 object Cart {
@@ -23,22 +22,14 @@ object CartRequest {
 }
 
 case class CartItem(itemId: UUID,
-                    itemName: String,
-                    itemQuantity: Int)
+                    quantity: Int)
 
 object CartItem {
-  implicit val format: Format[CartItem] = Json.format[CartItem]
-}
-
-case class AddItem(itemId: UUID,
-                   quantity: Int)
-
-object AddItem {
-  implicit val reads: Reads[AddItem] = (
+  implicit val reads: Reads[CartItem] = (
     (JsPath \ "itemId").read[UUID] and
       (JsPath \ "quantity").read[Int](min(1))
-    )(AddItem.apply _)
+    )(CartItem.apply _)
 
-  implicit val writes: Writes[AddItem] = Json.writes[AddItem]
-  implicit val format: Format[AddItem] = Format(reads, writes)
+  implicit val writes: Writes[CartItem] = Json.writes[CartItem]
+  implicit val format: Format[CartItem] = Format(reads, writes)
 }

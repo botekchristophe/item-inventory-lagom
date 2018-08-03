@@ -13,9 +13,23 @@ object Checkout {
 }
 
 case class CheckoutCombination(price: Double,
-                               items: Map[String, Int],
-                               bundles: Map[String, Int])
+                               items: Iterable[CheckoutItem],
+                               bundles: Iterable[CheckoutBundle])
 
 object CheckoutCombination {
   implicit val format: Format[CheckoutCombination] = Json.format[CheckoutCombination]
+}
+
+case class CheckoutItem(quantity: Int,
+                        itemId: UUID)
+
+object CheckoutItem {
+  implicit val format: Format[CheckoutItem] = Json.format[CheckoutItem]
+}
+
+case class CheckoutBundle(quantity: Int,
+                          bundleId: UUID)
+
+object CheckoutBundle {
+  implicit val format: Format[CheckoutBundle] = Json.format[CheckoutBundle]
 }
