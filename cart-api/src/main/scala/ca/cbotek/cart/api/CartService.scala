@@ -21,7 +21,7 @@ trait CartService extends Service {
     import Service._
     // @formatter:off
     named("item-service").withCalls(
-      restCall(Method.GET,    "/api/rest/carts",              createCart _),
+      restCall(Method.GET,    "/api/rest/carts",              getCarts _),
       restCall(Method.POST,   "/api/rest/carts",              createCart _),
       restCall(Method.POST,   "/api/rest/carts/:id",          addItemToCart _),
       restCall(Method.POST,   "/api/rest/carts/:id/checkout", checkout _)

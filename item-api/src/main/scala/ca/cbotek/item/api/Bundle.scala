@@ -8,15 +8,22 @@ import play.api.libs.json.{Reads, _}
 
 case class Bundle(id: UUID,
                   name: String,
-                  items: Set[UUID],
+                  items: Set[BundleItem],
                   price: Double)
 
 object Bundle {
   implicit val format: Format[Bundle] = Json.format[Bundle]
 }
 
+case class BundleItem(quantity: Int,
+                      item: Item)
+
+object BundleItem {
+  implicit val format: Format[BundleItem] = Json.format[BundleItem]
+}
+
 case class BundleRequest(name: String,
-                         items: Iterable[UUID],
+                         items: Iterable[BundleRequestItem],
                          price: Double)
 
 object BundleRequest {
@@ -28,4 +35,11 @@ object BundleRequest {
 
   implicit val writes: Writes[BundleRequest] = Json.writes[BundleRequest]
   implicit val format: Format[BundleRequest] = Format(reads, writes)
+}
+
+case class BundleRequestItem(quantity: Int,
+                             itemId: UUID)
+
+object BundleRequestItem {
+  implicit val format: Format[BundleRequestItem] = Json.format[BundleRequestItem]
 }
