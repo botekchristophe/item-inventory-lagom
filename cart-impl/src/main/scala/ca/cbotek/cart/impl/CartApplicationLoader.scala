@@ -1,6 +1,7 @@
 package ca.cbotek.cart.impl
 
 import ca.cbotek.cart.api.CartService
+import ca.cbotek.item.api.ItemService
 import com.lightbend.lagom.scaladsl.api.Descriptor
 import com.lightbend.lagom.scaladsl.broker.kafka.LagomKafkaComponents
 import com.lightbend.lagom.scaladsl.client.ConfigurationServiceLocatorComponents
@@ -28,12 +29,12 @@ abstract class CartApplication(context: LagomApplicationContext)
     with LagomKafkaComponents
     with AhcWSComponents {
 
-  // Bind the services that this server provides
   override lazy val lagomServer: LagomServer = serverFor[CartService](wire[CartServiceImpl])
-
-  // Register the JSON serializer registry
+  persistentEntityRegistry.register(wire[CartEntity])
+  readSide.register(wire[CartReadSideProcessor])
   override lazy val jsonSerializerRegistry: JsonSerializerRegistry = CartSerializerRegistry
 
-  persistentEntityRegistry.register(wire[CartEntity])
+  lazy val itemService: ItemService = serviceClient.implement[ItemService]
+  lazy val cartRepository: CartRepository = wire[CartRepository]
 }
 
