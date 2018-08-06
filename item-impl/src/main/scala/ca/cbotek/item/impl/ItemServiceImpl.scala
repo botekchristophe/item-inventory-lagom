@@ -80,11 +80,53 @@ class ItemServiceImpl(registry: PersistentEntityRegistry,
         .map(_.marshall)
     )
 
-  override def checkout(id: UUID): ServiceCall[NotUsed, Either[ErrorResponse, Checkout]] =
+  override def checkout(id: UUID): ServiceCall[NotUsed, Either[ErrorResponse, CartCheckout]] =
     ServerServiceCall((_, _) =>
-      Future.successful(Left(ErrorResponse(501, "Not Implemented", "yet.")))
+      cartRepository
+        .getOneCart(id)
+        .flatMap(_.fold[Future[Either[ErrorResponse, CartCheckout]]](
+          e => Future.successful(Left(e)),
+          cart =>
+            refForInventory
+              .ask(GetInventory)
+              .map(inventory => {
+                val oCart = optimizeCart(CartCheckout(cart.id, cart.user, 0.0, cart.items, Set.empty[CartBundle]), inventory.bundles)
+                val itemsPrice: Double =
+                  oCart.items.map(i => i.quantity.toDouble * inventory.items.find(_.id == i.itemId).map(_.price).getOrElse(0.0)).sum
+                val bundlesPrice: Double =
+                  oCart.bundles.map(b => b.quantity.toDouble * inventory.bundles.find(_.id == b.bundleId).map(_.price).getOrElse(0.0)).sum
+                Right(oCart.copy(price = itemsPrice + bundlesPrice))
+              })))
         .map(_.marshall)
     )
+
+  private def optimizeCart(cart: CartCheckout, bundles: Set[Bundle]): CartCheckout = {
+    bundles
+      .filterNot(bundle => bundle.items.map(_.item.id).intersect(cart.items.map(_.itemId)).size != bundle.items.map(_.item.id).size)
+      .toList.sortBy(_.price).reverse match {
+      case Nil => cart
+      case all @ head :: tail =>
+        if (head.items.forall(bi => cart.items.exists(ci => ci.itemId == bi.item.id && ci.quantity >= bi.quantity))) {
+          val optimizedCart = cart.copy(
+            items =
+              cart
+                .items
+                .map(i => i.copy(quantity = i.quantity - head.items.find(_.item.id == i.itemId).map(_.quantity).getOrElse(0)))
+                .filterNot(_.quantity <= 0),
+            bundles =
+              cart
+                .bundles
+                .find(_.bundleId == head.id)
+                .fold[Set[CartBundle]](
+                cart.bundles + CartBundle(head.id, 1))(
+                cb => cart.bundles.filterNot(_.bundleId == cb.bundleId) + CartBundle(cb.bundleId, cb.quantity +1))
+          )
+          optimizeCart(optimizedCart, all.toSet)
+        } else {
+          optimizeCart(cart, tail.toSet)
+        }
+    }
+  }
 
   private def checkItemIdsExist(itemIds: Set[UUID]): Future[Either[ErrorResponse, Catalog]] =
     refForInventory

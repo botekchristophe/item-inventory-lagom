@@ -21,7 +21,7 @@ trait ItemService extends Service {
   def getCarts:                                                           ServiceCall[NotUsed, Iterable[Cart]]
   def createCart:                                                         ServiceCall[CartRequest, Either[ErrorResponse, Cart]]
   def setQuantityForCartItem(cartId: UUID, itemId: UUID, quantity: Int):  ServiceCall[NotUsed, Either[ErrorResponse, Cart]]
-  def checkout(id: UUID):                                                 ServiceCall[NotUsed, Either[ErrorResponse, Checkout]]
+  def checkout(id: UUID):                                                 ServiceCall[NotUsed, Either[ErrorResponse, CartCheckout]]
 
   override final def descriptor: Descriptor = {
     import Service._

@@ -33,3 +33,21 @@ object CartItem {
   implicit val writes: Writes[CartItem] = Json.writes[CartItem]
   implicit val format: Format[CartItem] = Format(reads, writes)
 }
+
+
+case class CartBundle(bundleId: UUID,
+                      quantity: Int)
+
+object CartBundle {
+  implicit val format: Format[CartBundle] = Json.format[CartBundle]
+}
+
+case class CartCheckout(id: UUID,
+                        user: String,
+                        price: Double,
+                        items: Set[CartItem],
+                        bundles: Set[CartBundle])
+
+object CartCheckout {
+  implicit val format: Format[CartCheckout] = Json.format[CartCheckout]
+}
