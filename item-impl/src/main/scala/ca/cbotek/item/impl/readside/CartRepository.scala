@@ -21,7 +21,9 @@ class CartRepository(session: CassandraSession)(implicit ec: ExecutionContext) {
         Try(implicitly[Format[Set[CartItem]]].reads(Json.parse(row.getString("items"))).asOpt)
           .toOption
           .flatten
-          .getOrElse(Set.empty[CartItem])
+          .getOrElse(Set.empty[CartItem]),
+      status = row.getString("status"),
+      checkout_price = Try(row.getString("checkout_price").toDouble).toOption
     )
 
   def getCarts: Future[Iterable[Cart]] =

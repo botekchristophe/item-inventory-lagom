@@ -21,7 +21,7 @@ object SetItemToCart {
   implicit val format: Format[SetItemToCart] = Json.format[SetItemToCart]
 }
 
-case class CheckoutCart(id: UUID) extends CartCommand[Either[ErrorResponse, Cart]]
+case class CheckoutCart(id: UUID, price: Double) extends CartCommand[Either[ErrorResponse, Cart]]
 object CheckoutCart {
   implicit val format: Format[CheckoutCart] = Json.format[CheckoutCart]
 }

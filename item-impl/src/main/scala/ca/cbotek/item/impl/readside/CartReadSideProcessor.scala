@@ -20,7 +20,7 @@ class CartReadSideProcessor(readSide: CassandraReadSide, session: CassandraSessi
 
   private var insertCartStatement: PreparedStatement = _
   private var updateCartItemsStatement: PreparedStatement = _
-  private var updateCartStatusStatement: PreparedStatement = _
+  private var updateCartCheckoutStatement: PreparedStatement = _
 
   def buildHandler: ReadSideHandler[CartEvent] = {
     readSide.builder[CartEvent]("cartOffset")
@@ -37,7 +37,7 @@ class CartReadSideProcessor(readSide: CassandraReadSide, session: CassandraSessi
       _ <- session.executeCreateTable(
         """
           |CREATE TABLE IF NOT EXISTS carts (
-          |   id uuid, user text, items text, status text,
+          |   id uuid, user text, items text, status text, checkout_price text,
           |   PRIMARY KEY (id)
           |   )
         """.stripMargin)
@@ -62,17 +62,17 @@ class CartReadSideProcessor(readSide: CassandraReadSide, session: CassandraSessi
         """.stripMargin
       )
 
-      updateCartStatus <- session.prepare(
+      updateCheckoutInfo <- session.prepare(
         """
           |UPDATE carts
-          |SET status = ?
+          |SET status = ?, checkout_price = ?
           |WHERE id = ?
         """.stripMargin
       )
     } yield {
       insertCartStatement = insertCart
       updateCartItemsStatement = updateCartItems
-      updateCartStatusStatement = updateCartStatus
+      updateCartCheckoutStatement = updateCheckoutInfo
       Done
     }
   }
@@ -101,8 +101,9 @@ class CartReadSideProcessor(readSide: CassandraReadSide, session: CassandraSessi
   private def cartCheckedOut(e: EventStreamElement[CartCheckedout]): Future[List[BoundStatement]] = {
     Future.successful {
       val c = e.event
-      List(updateCartStatusStatement.bind(
-        CartStatuses.CHECKEDOUT.toString,
+      List(updateCartCheckoutStatement.bind(
+        CartStatuses.CHECKED_OUT.toString,
+        e.event.price.toString,
         c.id
       ))
     }

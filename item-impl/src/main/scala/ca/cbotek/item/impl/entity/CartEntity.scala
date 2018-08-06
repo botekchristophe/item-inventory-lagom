@@ -26,7 +26,7 @@ class CartEntity extends PersistentEntity {
   override def behavior: Behavior = {
     case None => unCreated
     case Some(cart) if cart.status == CartStatuses.IN_USE => inUse
-    case Some(cart) if cart.status == CartStatuses.CHECKEDOUT => checkedOut
+    case Some(cart) if cart.status == CartStatuses.CHECKED_OUT => checkedOut
   }
 
   private def unCreated: Actions =
@@ -49,8 +49,8 @@ class CartEntity extends PersistentEntity {
       .onEvent {
         case (CartItemsUpdated(_, updatedItems), cartState) =>
           cartState.map(cart => cart.copy(items = updatedItems))
-        case (CartCheckedout(_), cartState) =>
-          cartState.map(cart => cart.copy(status = CartStatuses.CHECKEDOUT))
+        case (CartCheckedout(_, _), cartState) =>
+          cartState.map(cart => cart.copy(status = CartStatuses.CHECKED_OUT))
         case (_, state) =>
           state
       }
@@ -67,7 +67,7 @@ class CartEntity extends PersistentEntity {
 
   private def createCart: OnCommandHandler[Either[ErrorResponse, Cart]] = {
     case (CreateCart(id, user, items), ctx, _) =>
-      ctx.thenPersist(CartCreated(id, user, items))(_ => ctx.reply(Right(Cart(id, user, items))))
+      ctx.thenPersist(CartCreated(id, user, items))(_ => ctx.reply(Right(Cart(id, user, items, CartStatuses.IN_USE.toString))))
   }
 
   private def setItemToCart: OnCommandHandler[Either[ErrorResponse, Cart]] = {
@@ -77,12 +77,12 @@ class CartEntity extends PersistentEntity {
           .items
           .find(_.itemId == itemId)
           .fold(cart.items + CartItem(itemId, qtt))(item => cart.items.filterNot(_.itemId == itemId) + item.copy(quantity = qtt))
-      ctx.thenPersist(CartItemsUpdated(id, updatedItems))(_ => ctx.reply(Right(Cart(id, cart.user, updatedItems))))
+      ctx.thenPersist(CartItemsUpdated(id, updatedItems))(_ => ctx.reply(Right(Cart(id, cart.user, updatedItems, CartStatuses.IN_USE.toString))))
   }
 
   private def checkoutCart: OnCommandHandler[Either[ErrorResponse, Cart]] = {
-    case (CheckoutCart(id), ctx, Some(cart)) =>
-      ctx.thenPersist(CartCheckedout(id))(_ => ctx.reply(Right(Cart(id, cart.user, cart.items))))
+    case (CheckoutCart(id, price), ctx, Some(cart)) =>
+      ctx.thenPersist(CartCheckedout(id, price))(_ => ctx.reply(Right(Cart(id, cart.user, cart.items, CartStatuses.IN_USE.toString))))
   }
 
   private def replyNotFound[R]: OnCommandHandler[Either[ErrorResponse, R]] = {

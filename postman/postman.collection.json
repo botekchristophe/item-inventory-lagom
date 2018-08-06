@@ -1,0 +1,292 @@
+{
+  "info": {
+    "_postman_id": "f1640222-46f3-7a2a-c43e-c9b711d6c63a",
+    "name": "Item Inventory",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [{
+    "name": "get Catalog",
+    "request": {
+      "auth": {
+        "type": "noauth"
+      },
+      "method": "GET",
+      "header": [{
+        "key": "X-JFrog-Art-Api",
+        "value": "AKCp2V5euNytfujhAdVCLRG5Wb1cabPeCFgia6M5PBYSJy7w8rWZHFUc8HgQSXrNi8ptudSDM"
+      },
+        {
+          "key": "Content-Type",
+          "value": "text/plain",
+          "disabled": true
+        }
+      ],
+      "body": {
+        "mode": "raw",
+        "raw": "apps: \n  - \n    components: \n      - vpp\n      - vpp-lib\n      - honneycomb\n    name: fd.io\n    version:\n      - \"17.04\"\n  - \n    components: \n      - odl-bgpcep-bgp-all\n      - odl-bgpcep-pcep-all\n      - odl-restconf-all\n      - odl-netconf-all\n      - odl-dlux-all\n    name: iod\n    version: \n      - Carbon\n      - Boron\ndescription: description\nexcerpt: excerpt\nname: my recipe"
+      },
+      "url": {
+        "raw": "http://localhost:9000/api/rest/catalog",
+        "protocol": "http",
+        "host": [
+          "localhost"
+        ],
+        "port": "9000",
+        "path": [
+          "api",
+          "rest",
+          "catalog"
+        ]
+      }
+    },
+    "response": []
+  },
+    {
+      "name": "add Item",
+      "request": {
+        "method": "POST",
+        "header": [{
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+          {
+            "key": "Authorization",
+            "value": "Basic ZWFmcmdjYXplUms2NVpzc2h2QnNNNkU0OmhtQ2JjVG4yTjJUakRzUFRVQXhyQlRSTA=="
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\"name\": \"BlackDiamond - Carabiner\",\n\"description\": \"Some good stuff\",\n\"price\": 1\n}"
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/items",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "items"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add bundle",
+      "request": {
+        "method": "POST",
+        "header": [{
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+          {
+            "key": "Authorization",
+            "value": "Basic ZWFmcmdjYXplUms2NVpzc2h2QnNNNkU0OmhtQ2JjVG4yTjJUakRzUFRVQXhyQlRSTA=="
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\"name\": \"BlackDiamond - RED Carabiner 30 pack\",\n\"items\": [{\n\t\"quantity\": 30,\n\t\"itemId\": \"99d4d7f2-caaa-4f11-9bab-17dfe0eaed10\"\n\t}],\n\"price\": 29.99\n}"
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/bundles",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "bundles"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "delete Item",
+      "request": {
+        "method": "DELETE",
+        "header": [{
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+          {
+            "key": "Authorization",
+            "value": "Basic ZWFmcmdjYXplUms2NVpzc2h2QnNNNkU0OmhtQ2JjVG4yTjJUakRzUFRVQXhyQlRSTA=="
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\"name\": \"BlackDiamond - Carabiner\",\n\"description\": \"Some good stuff\",\n\"price\": 1\n}"
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/items/c1a14a38-ec9d-4cca-80b8-d26d0975ee2e",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "items",
+            "c1a14a38-ec9d-4cca-80b8-d26d0975ee2e"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "get carts",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [{
+          "key": "X-JFrog-Art-Api",
+          "value": "AKCp2V5euNytfujhAdVCLRG5Wb1cabPeCFgia6M5PBYSJy7w8rWZHFUc8HgQSXrNi8ptudSDM"
+        },
+          {
+            "key": "Content-Type",
+            "value": "text/plain",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "apps: \n  - \n    components: \n      - vpp\n      - vpp-lib\n      - honneycomb\n    name: fd.io\n    version:\n      - \"17.04\"\n  - \n    components: \n      - odl-bgpcep-bgp-all\n      - odl-bgpcep-pcep-all\n      - odl-restconf-all\n      - odl-netconf-all\n      - odl-dlux-all\n    name: iod\n    version: \n      - Carbon\n      - Boron\ndescription: description\nexcerpt: excerpt\nname: my recipe"
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/carts",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "carts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "create cart",
+      "request": {
+        "method": "POST",
+        "header": [{
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+          {
+            "key": "Authorization",
+            "value": "Basic ZWFmcmdjYXplUms2NVpzc2h2QnNNNkU0OmhtQ2JjVG4yTjJUakRzUFRVQXhyQlRSTA=="
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\"user\" : \"cbotek\",\n\"items\": [{\n\t\"itemId\": \"d237b2f6-aed5-46d4-86a7-a7079d090ba7\",\n\t\"quantity\": 12\n}]\n}"
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/carts",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "carts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "set item to cart",
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "PUT",
+        "header": [{
+          "key": "X-JFrog-Art-Api",
+          "value": "AKCp2V5euNytfujhAdVCLRG5Wb1cabPeCFgia6M5PBYSJy7w8rWZHFUc8HgQSXrNi8ptudSDM"
+        },
+          {
+            "key": "Content-Type",
+            "value": "text/plain",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "apps: \n  - \n    components: \n      - vpp\n      - vpp-lib\n      - honneycomb\n    name: fd.io\n    version:\n      - \"17.04\"\n  - \n    components: \n      - odl-bgpcep-bgp-all\n      - odl-bgpcep-pcep-all\n      - odl-restconf-all\n      - odl-netconf-all\n      - odl-dlux-all\n    name: iod\n    version: \n      - Carbon\n      - Boron\ndescription: description\nexcerpt: excerpt\nname: my recipe"
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/carts/18514e7a-a847-4ebb-a182-7da66dd34430/items/d237b2f6-aed5-46d4-86a7-a7079d090ba7/quantity/13",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "carts",
+            "18514e7a-a847-4ebb-a182-7da66dd34430",
+            "items",
+            "d237b2f6-aed5-46d4-86a7-a7079d090ba7",
+            "quantity",
+            "13"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "optimize cart",
+      "request": {
+        "method": "POST",
+        "header": [{
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+          {
+            "key": "Authorization",
+            "value": "Basic ZWFmcmdjYXplUms2NVpzc2h2QnNNNkU0OmhtQ2JjVG4yTjJUakRzUFRVQXhyQlRSTA=="
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\"user\" : \"cbotek\",\n\"items\": [{\n\t\"itemId\": \"d237b2f6-aed5-46d4-86a7-a7079d090ba7\",\n\t\"quantity\": 12\n}]\n}"
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/carts/f446e2ee-9cfd-42a8-b3b0-0840d5b34b7a/checkout",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "carts",
+            "f446e2ee-9cfd-42a8-b3b0-0840d5b34b7a",
+            "checkout"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

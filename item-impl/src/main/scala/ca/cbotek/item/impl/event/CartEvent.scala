@@ -28,7 +28,7 @@ object CartItemsUpdated {
   implicit val format: Format[CartItemsUpdated] = Json.format[CartItemsUpdated]
 }
 
-case class CartCheckedout(id: UUID) extends CartEvent
+case class CartCheckedout(id: UUID, price: Double) extends CartEvent
 object CartCheckedout {
   implicit val format: Format[CartCheckedout] = Json.format[CartCheckedout]
 }

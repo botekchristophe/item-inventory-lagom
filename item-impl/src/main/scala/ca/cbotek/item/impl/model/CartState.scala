@@ -17,7 +17,7 @@ object CartState {
 
 object CartStatuses extends Enumeration {
   type CartStatus = Value
-  val IN_USE, CHECKEDOUT = Value
+  val IN_USE, CHECKED_OUT = Value
 
   implicit val format: Format[CartStatus] = enumFormat(CartStatuses)
 }

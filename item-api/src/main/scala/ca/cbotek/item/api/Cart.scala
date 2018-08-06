@@ -8,7 +8,9 @@ import play.api.libs.json.{Reads, _}
 
 case class Cart(id: UUID,
                 user: String, //user identifier
-                items: Set[CartItem])
+                items: Set[CartItem],
+                status: String,
+                checkout_price: Option[Double] = None)
 
 object Cart {
   implicit val format: Format[Cart] = Json.format[Cart]
