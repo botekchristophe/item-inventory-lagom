@@ -1,8 +1,8 @@
-package ca.cbotek.cart.impl
+package ca.cbotek.item.impl.command
 
 import java.util.UUID
 
-import ca.cbotek.cart.api.{Cart, CartItem}
+import ca.cbotek.item.api.{Cart, CartItem}
 import ca.cbotek.shared.ErrorResponse
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntity.ReplyType
 import play.api.libs.json.{Format, Json}

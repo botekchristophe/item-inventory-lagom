@@ -1,8 +1,8 @@
-package ca.cbotek.cart.impl
+package ca.cbotek.item.impl.event
 
 import java.util.UUID
 
-import ca.cbotek.cart.api.CartItem
+import ca.cbotek.item.api.CartItem
 import com.lightbend.lagom.scaladsl.persistence.{AggregateEvent, AggregateEventShards, AggregateEventTag, AggregateEventTagger}
 import play.api.libs.json.{Format, Json}
 

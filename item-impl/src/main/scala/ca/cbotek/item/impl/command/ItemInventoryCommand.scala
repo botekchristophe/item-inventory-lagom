@@ -1,8 +1,9 @@
-package ca.cbotek.item.impl
+package ca.cbotek.item.impl.command
 
 import java.util.UUID
 
 import ca.cbotek.item.api.{Bundle, BundleRequestItem, Item}
+import ca.cbotek.item.impl.model.ItemInventoryState
 import ca.cbotek.shared.ErrorResponse
 import ca.cbotek.shared.JsonFormats._
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntity.ReplyType

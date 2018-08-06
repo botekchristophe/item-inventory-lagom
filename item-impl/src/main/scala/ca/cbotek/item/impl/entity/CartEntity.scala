@@ -1,6 +1,9 @@
-package ca.cbotek.cart.impl
+package ca.cbotek.item.impl.entity
 
-import ca.cbotek.cart.api.{Cart, CartItem}
+import ca.cbotek.item.api.{Cart, CartItem}
+import ca.cbotek.item.impl.command.{CartCommand, CheckoutCart, CreateCart, SetItemToCart}
+import ca.cbotek.item.impl.event.{CartCheckedout, CartCreated, CartEvent, CartItemsUpdated}
+import ca.cbotek.item.impl.model.{CartState, CartStatuses}
 import ca.cbotek.shared.ErrorResponse
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntity
 import org.slf4j.LoggerFactory
@@ -32,6 +35,8 @@ class CartEntity extends PersistentEntity {
       .onCommand[SetItemToCart, Either[ErrorResponse, Cart]] { replyNotFound }
       .onCommand[CheckoutCart, Either[ErrorResponse, Cart]] { replyNotFound }
       .onEvent {
+        case (CartCreated(id, user, items), _) =>
+          Some(CartState(id, user, items, CartStatuses.IN_USE))
         case (_, state) =>
           state
       }
@@ -42,6 +47,10 @@ class CartEntity extends PersistentEntity {
       .onCommand[SetItemToCart, Either[ErrorResponse, Cart]] { setItemToCart }
       .onCommand[CheckoutCart, Either[ErrorResponse, Cart]] { checkoutCart }
       .onEvent {
+        case (CartItemsUpdated(_, updatedItems), cartState) =>
+          cartState.map(cart => cart.copy(items = updatedItems))
+        case (CartCheckedout(_), cartState) =>
+          cartState.map(cart => cart.copy(status = CartStatuses.CHECKEDOUT))
         case (_, state) =>
           state
       }

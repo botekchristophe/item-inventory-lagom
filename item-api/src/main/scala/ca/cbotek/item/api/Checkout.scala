@@ -1,4 +1,4 @@
-package ca.cbotek.cart.api
+package ca.cbotek.item.api
 
 import java.util.UUID
 

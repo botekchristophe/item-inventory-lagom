@@ -1,8 +1,11 @@
-package ca.cbotek.item.impl
+package ca.cbotek.item.impl.entity
 
 import java.util.UUID
 
 import ca.cbotek.item.api.{Bundle, BundleItem, BundleRequestItem, Item}
+import ca.cbotek.item.impl.command._
+import ca.cbotek.item.impl.event._
+import ca.cbotek.item.impl.model.ItemInventoryState
 import ca.cbotek.shared.ErrorResponse
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntity
 import org.slf4j.LoggerFactory

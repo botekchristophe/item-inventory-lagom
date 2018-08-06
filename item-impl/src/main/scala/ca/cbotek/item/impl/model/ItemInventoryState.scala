@@ -1,4 +1,4 @@
-package ca.cbotek.item.impl
+package ca.cbotek.item.impl.model
 
 import ca.cbotek.item.api.{Bundle, Item}
 import play.api.libs.json.{Format, Json}

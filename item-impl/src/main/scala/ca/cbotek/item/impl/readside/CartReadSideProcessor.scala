@@ -1,7 +1,9 @@
-package ca.cbotek.cart.impl
+package ca.cbotek.item.impl.readside
 
 import akka.Done
-import ca.cbotek.cart.api.CartItem
+import ca.cbotek.item.api.CartItem
+import ca.cbotek.item.impl.event.{CartCheckedout, CartCreated, CartEvent, CartItemsUpdated}
+import ca.cbotek.item.impl.model.CartStatuses
 import com.datastax.driver.core.{BoundStatement, PreparedStatement}
 import com.lightbend.lagom.scaladsl.persistence.ReadSideProcessor.ReadSideHandler
 import com.lightbend.lagom.scaladsl.persistence.cassandra.{CassandraReadSide, CassandraSession}
@@ -55,7 +57,7 @@ class CartReadSideProcessor(readSide: CassandraReadSide, session: CassandraSessi
       updateCartItems <- session.prepare(
         """
           |UPDATE carts
-          |SET status = ?
+          |SET items = ?
           |WHERE id = ?
         """.stripMargin
       )
@@ -81,7 +83,7 @@ class CartReadSideProcessor(readSide: CassandraReadSide, session: CassandraSessi
       List(insertCartStatement.bind(
         c.id,
         c.user,
-        implicitly[Format[Set[CartItem]]].writes(c.items),
+        implicitly[Format[Set[CartItem]]].writes(c.items).toString,
         CartStatuses.IN_USE.toString
       ))
     }
@@ -90,7 +92,7 @@ class CartReadSideProcessor(readSide: CassandraReadSide, session: CassandraSessi
   private def cartItemsUpdated(e: EventStreamElement[CartItemsUpdated]): Future[List[BoundStatement]] = {
     Future.successful {
       List(updateCartItemsStatement.bind(
-        implicitly[Format[Set[CartItem]]].writes(e.event.items),
+        implicitly[Format[Set[CartItem]]].writes(e.event.items).toString,
         e.event.id
       ))
     }
@@ -100,7 +102,7 @@ class CartReadSideProcessor(readSide: CassandraReadSide, session: CassandraSessi
     Future.successful {
       val c = e.event
       List(updateCartStatusStatement.bind(
-        CartStatuses.CHECKEDOUT,
+        CartStatuses.CHECKEDOUT.toString,
         c.id
       ))
     }

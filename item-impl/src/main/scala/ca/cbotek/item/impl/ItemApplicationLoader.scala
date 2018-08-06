@@ -1,6 +1,8 @@
 package ca.cbotek.item.impl
 
 import ca.cbotek.item.api.ItemService
+import ca.cbotek.item.impl.entity.{CartEntity, ItemInventoryEntity}
+import ca.cbotek.item.impl.readside.{CartReadSideProcessor, CartRepository}
 import com.lightbend.lagom.scaladsl.api.Descriptor
 import com.lightbend.lagom.scaladsl.broker.kafka.LagomKafkaComponents
 import com.lightbend.lagom.scaladsl.client.ConfigurationServiceLocatorComponents
@@ -33,8 +35,11 @@ abstract class ItemApplication(context: LagomApplicationContext)
 
   // Register the JSON serializer registry
   override lazy val jsonSerializerRegistry: JsonSerializerRegistry = ItemSerializerRegistry
-
+  persistentEntityRegistry.register(wire[CartEntity])
   persistentEntityRegistry.register(wire[ItemInventoryEntity])
+  readSide.register(wire[CartReadSideProcessor])
 
+  lazy val itemService: ItemService = serviceClient.implement[ItemService]
+  lazy val cartRepository: CartRepository = wire[CartRepository]
   wire[ItemInventoryInit]
 }

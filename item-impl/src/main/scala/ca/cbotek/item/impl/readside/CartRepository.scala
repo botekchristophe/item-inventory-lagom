@@ -1,6 +1,6 @@
-package ca.cbotek.cart.impl
+package ca.cbotek.item.impl.readside
 
-import ca.cbotek.cart.api.{Cart, CartItem}
+import ca.cbotek.item.api.{Cart, CartItem}
 import com.datastax.driver.core.Row
 import com.lightbend.lagom.scaladsl.persistence.cassandra.CassandraSession
 import play.api.libs.json.{Format, Json}

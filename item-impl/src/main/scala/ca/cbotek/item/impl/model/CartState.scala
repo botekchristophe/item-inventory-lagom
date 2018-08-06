@@ -1,9 +1,9 @@
-package ca.cbotek.cart.impl
+package ca.cbotek.item.impl.model
 
 import java.util.UUID
 
-import ca.cbotek.cart.api.CartItem
-import ca.cbotek.cart.impl.CartStatuses.CartStatus
+import ca.cbotek.item.api.CartItem
+import ca.cbotek.item.impl.model.CartStatuses.CartStatus
 import ca.cbotek.shared.JsonFormats._
 import play.api.libs.json.{Format, Json}
 

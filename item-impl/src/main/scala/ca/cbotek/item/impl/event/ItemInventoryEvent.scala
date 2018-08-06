@@ -1,4 +1,4 @@
-package ca.cbotek.item.impl
+package ca.cbotek.item.impl.event
 
 import java.util.UUID
 
