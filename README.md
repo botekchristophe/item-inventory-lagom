@@ -1,7 +1,7 @@
 # item-inventory-lagom
 This project is an implementation example of how to manage an item inventory with Lagom Framework (1.4.7)
 
-##Item API
+## Item API
 
 ```scala
   override final def descriptor: Descriptor = {
@@ -19,7 +19,7 @@ This project is an implementation example of how to manage an item inventory wit
     }
 ```
 
-##Definition
+## Definition
 
 ### Catalog
 
@@ -50,4 +50,4 @@ sbt clean runAll
 ```
 In order to make the project easier to use a *postman* collection is available in `/postman` folder.
 
-#####Feel free to comment and/or submit a PR
+##### Feel free to comment and/or submit a PR
