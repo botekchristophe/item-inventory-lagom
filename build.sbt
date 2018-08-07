@@ -13,7 +13,8 @@ lazy val `item-inventory-lagom` = (project in file("."))
 lazy val `shared` = (project in file("shared"))
   .settings(
     libraryDependencies ++= Seq(
-      lagomScaladslApi
+      lagomScaladslApi,
+      scalaTest
     )
   )
 
