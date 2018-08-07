@@ -13,6 +13,13 @@ case class Bundle(id: UUID,
 
 object Bundle {
   implicit val format: Format[Bundle] = Json.format[Bundle]
+
+  def apply(items: Set[BundleItem]): Bundle =
+    Bundle(
+      UUID.randomUUID(),
+      name = items.map(_.item.name).mkString("", " - ", " Pack"),
+      items,
+      price = items.map(i => i.quantity * i.item.price * 0.9).sum * Math.pow(0.99, items.size))
 }
 
 case class BundleItem(quantity: Int,

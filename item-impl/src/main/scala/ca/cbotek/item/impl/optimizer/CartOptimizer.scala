@@ -1,11 +1,12 @@
-package ca.cbotek.item.impl
+package ca.cbotek.item.impl.optimizer
 
 import ca.cbotek.item.api._
 import ca.cbotek.item.impl.model.ItemInventoryState
+import org.slf4j.LoggerFactory
 
 object CartOptimizer {
 
-
+  final val logger = LoggerFactory.getLogger(CartOptimizer.getClass)
   /**
     * Tail recursive method optimizing a CartCheckout based on a set of Bundle.
     * On each iteration the cart items are replaced by a bundle from the set of bundles.
@@ -24,15 +25,23 @@ object CartOptimizer {
     bundles
       .filterNot(bundle => bundleItemsNotInCartItems(bundle, cart))
       .toList.sortBy(_.price).reverse match {
-      case Nil => cart
+      case Nil =>
+        logger.info("Optimization done. No more bundle to try.")
+        logger.info(s"Cart Items: ${cart.items.mkString("[", ", ", "]")}")
+        logger.info(s"Cart Bundles: ${cart.bundles.mkString("[", ", ", "]")}")
+        cart
       case all @ head :: tail =>
+        logger.info(s"Trying to optimize with ${head.name} bundle - ${head.price} dollar(s).")
+        logger.info(s"Bundle to go: ${tail.size}")
         if (head.items.forall(bi => cartContainsEnoughItemsToUseBundle(bi, cart))) {
           val optimizedCart = cart.copy(
             items = removeBundleItemsFromCart(head, cart),
             bundles = addBundleToCart(head, cart)
           )
+          logger.info("Success to optimize - keeping head")
           optimizeCart(optimizedCart, all.toSet)
         } else {
+          logger.info("Failure to optimize - removing head - keeping tail.")
           optimizeCart(cart, tail.toSet)
         }
     }

@@ -7,6 +7,7 @@ import ca.cbotek.item.api._
 import ca.cbotek.item.impl.ServiceErrors._
 import ca.cbotek.item.impl.command._
 import ca.cbotek.item.impl.entity.{CartEntity, ItemInventoryEntity}
+import ca.cbotek.item.impl.optimizer.CartOptimizer
 import ca.cbotek.item.impl.readside.CartRepository
 import ca.cbotek.shared.{ErrorResponse, Marshaller}
 import com.lightbend.lagom.scaladsl.api.ServiceCall
