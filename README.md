@@ -50,4 +50,23 @@ sbt clean runAll
 ```
 In order to make the project easier to use a *postman* collection is available in `/postman` folder.
 
+## Test coverage
+
+In order to check the application unit test coverage, `scoverage` plugin is added to plugin.sbt file.
+
+To see the coverage results:
+```scala
+sbt coverage test
+sbt coverageReport
+```
+
+Here are the latest results:
+
+```sbtshell
+[info] Statement coverage.: 69.84%
+[info] Branch coverage....: 87.50%
+[info] Coverage reports completed
+[info] All done. Coverage was [69.84%]
+```
+
 ##### Feel free to comment and/or submit a PR

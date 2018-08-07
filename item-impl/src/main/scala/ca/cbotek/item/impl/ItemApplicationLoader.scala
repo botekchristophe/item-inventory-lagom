@@ -3,9 +3,8 @@ package ca.cbotek.item.impl
 import ca.cbotek.item.api.ItemService
 import ca.cbotek.item.impl.entity.{CartEntity, ItemInventoryEntity}
 import ca.cbotek.item.impl.readside.{CartReadSideProcessor, CartRepository}
-import com.lightbend.lagom.scaladsl.api.Descriptor
+import com.lightbend.lagom.scaladsl.api.{Descriptor, ServiceLocator}
 import com.lightbend.lagom.scaladsl.broker.kafka.LagomKafkaComponents
-import com.lightbend.lagom.scaladsl.client.ConfigurationServiceLocatorComponents
 import com.lightbend.lagom.scaladsl.devmode.LagomDevModeComponents
 import com.lightbend.lagom.scaladsl.persistence.cassandra.CassandraPersistenceComponents
 import com.lightbend.lagom.scaladsl.playjson.JsonSerializerRegistry
@@ -16,7 +15,9 @@ import play.api.libs.ws.ahc.AhcWSComponents
 class ItemApplicationLoader extends LagomApplicationLoader {
 
   override def load(context: LagomApplicationContext): LagomApplication =
-    new ItemApplication(context) with ConfigurationServiceLocatorComponents
+    new ItemApplication(context) {
+      override def serviceLocator: ServiceLocator = ServiceLocator.NoServiceLocator
+    }
 
   override def loadDevMode(context: LagomApplicationContext): LagomApplication =
     new ItemApplication(context) with LagomDevModeComponents
@@ -41,5 +42,5 @@ abstract class ItemApplication(context: LagomApplicationContext)
 
   lazy val itemService: ItemService = serviceClient.implement[ItemService]
   lazy val cartRepository: CartRepository = wire[CartRepository]
-  wire[ItemInventoryInit]
+  //wire[ItemInventoryInit]
 }

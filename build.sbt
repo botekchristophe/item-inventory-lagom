@@ -27,6 +27,7 @@ lazy val `item-api` = (project in file("item-api"))
 
 lazy val `item-impl` = (project in file("item-impl"))
   .enablePlugins(LagomScala)
+  .settings(lagomForkedTestSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
       lagomScaladslPersistenceCassandra,
@@ -36,5 +37,4 @@ lazy val `item-impl` = (project in file("item-impl"))
       scalaTest
     )
   )
-  .settings(lagomForkedTestSettings: _*)
   .dependsOn(`item-api`)

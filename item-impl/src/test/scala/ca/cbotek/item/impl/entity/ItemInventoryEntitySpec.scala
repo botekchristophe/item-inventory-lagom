@@ -136,5 +136,13 @@ class ItemInventoryEntitySpec extends WordSpec with Matchers with BeforeAndAfter
       outcome.state shouldBe ItemInventoryState.empty
       outcome.events.isEmpty shouldBe true
     }
+
+    "Accept GetInventory command with item(s) in inventory" in withItem { driver =>
+      driver.run(ItemInventoryMock.addBundle)
+      val outcome = driver.run(GetInventory)
+      outcome.replies should contain only ItemInventoryState(Set(ItemInventoryMock.newItem), Set(ItemInventoryMock.newBundle))
+      outcome.state shouldBe ItemInventoryState.empty.copy(items = Set(ItemInventoryMock.newItem), bundles = Set(ItemInventoryMock.newBundle))
+      outcome.events.isEmpty shouldBe true
+    }
   }
 }
