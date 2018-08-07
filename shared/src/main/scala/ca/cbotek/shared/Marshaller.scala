@@ -7,7 +7,9 @@ import scala.language.{implicitConversions, reflectiveCalls}
 import scala.util.{Left, Right}
 
 /**
-  * Every rest service should extend this trait to manage marshalling
+  * Provide an automated marshalling for :
+  * - `scala.util.Right` which will be marshaled as HTTP 200 response
+  * - `scala.util.Left[ErrorResponse]` which will be marshaled as an Error 4xx or 5xx according to the error status code
   */
 trait Marshaller {
 

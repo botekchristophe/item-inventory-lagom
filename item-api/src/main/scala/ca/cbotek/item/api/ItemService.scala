@@ -12,11 +12,11 @@ import play.api.{Environment, Mode}
 
 trait ItemService extends Service {
 
-  def getCatalog:               ServiceCall[NotUsed, Catalog]
-  def addItem:                  ServiceCall[ItemRequest, Either[ErrorResponse, Item]]
-  def addBundle:                ServiceCall[BundleRequest, Either[ErrorResponse, Bundle]]
-  def removeItem(id: UUID):     ServiceCall[NotUsed, Either[ErrorResponse, Item]]
-  def removeBundle(id: UUID):   ServiceCall[NotUsed, Either[ErrorResponse, Bundle]]
+  def getCatalog:                                                         ServiceCall[NotUsed, Catalog]
+  def addItem:                                                            ServiceCall[ItemRequest, Either[ErrorResponse, Item]]
+  def addBundle:                                                          ServiceCall[BundleRequest, Either[ErrorResponse, Bundle]]
+  def removeItem(id: UUID):                                               ServiceCall[NotUsed, Either[ErrorResponse, Item]]
+  def removeBundle(id: UUID):                                             ServiceCall[NotUsed, Either[ErrorResponse, Bundle]]
 
   def getCarts:                                                           ServiceCall[NotUsed, Iterable[Cart]]
   def createCart:                                                         ServiceCall[CartRequest, Either[ErrorResponse, Cart]]
@@ -27,11 +27,11 @@ trait ItemService extends Service {
     import Service._
     // @formatter:off
     named("item-service").withCalls(
-      restCall(Method.GET,    "/api/rest/catalog",      getCatalog _),
-      restCall(Method.POST,   "/api/rest/items",        addItem _),
-      restCall(Method.DELETE, "/api/rest/items/:id",    removeItem _),
-      restCall(Method.POST,   "/api/rest/bundles",      addBundle _),
-      restCall(Method.DELETE, "/api/rest/bundles/:id",  removeBundle _),
+      restCall(Method.GET,    "/api/rest/catalog",                            getCatalog _),
+      restCall(Method.POST,   "/api/rest/items",                              addItem _),
+      restCall(Method.DELETE, "/api/rest/items/:id",                          removeItem _),
+      restCall(Method.POST,   "/api/rest/bundles",                            addBundle _),
+      restCall(Method.DELETE, "/api/rest/bundles/:id",                        removeBundle _),
       restCall(Method.GET,    "/api/rest/carts",                              getCarts _),
       restCall(Method.POST,   "/api/rest/carts",                              createCart _),
       restCall(Method.PUT,    "/api/rest/carts/:id/items/:id/quantity/:qtt",  setQuantityForCartItem _),
