@@ -32,7 +32,7 @@ object CartOptimizer {
         cart
       case all @ head :: tail =>
         logger.info(s"Trying to optimize with ${head.name} bundle - ${head.price} dollar(s).")
-        logger.info(s"Bundle to go: ${tail.size}")
+        logger.info(s"Bundle to go: ${all.size}")
         if (head.items.forall(bi => cartContainsEnoughItemsToUseBundle(bi, cart))) {
           val optimizedCart = cart.copy(
             items = removeBundleItemsFromCart(head, cart),
