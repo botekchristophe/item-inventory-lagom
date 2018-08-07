@@ -1,5 +1,6 @@
 # item-inventory-lagom
-This project is an implementation example of how to manage an item inventory with Lagom Framework (1.4.7)
+This project is an example implementation of how to manage an item inventory with Lagom Framework (1.4.7)
+It covers the basic of fetching a catalog of items and bundles, create/removing items and managing a user Cart.
 
 ## Item API
 
