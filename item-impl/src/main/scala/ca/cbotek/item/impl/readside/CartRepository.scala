@@ -7,6 +7,7 @@ import ca.cbotek.shared.ErrorResponse
 import com.datastax.driver.core.Row
 import com.lightbend.lagom.scaladsl.persistence.cassandra.CassandraSession
 import play.api.libs.json.{Format, Json}
+import ca.cbotek.item.impl.ServiceErrors._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
@@ -34,6 +35,6 @@ class CartRepository(session: CassandraSession)(implicit ec: ExecutionContext) {
   def getOneCart(id: UUID): Future[Either[ErrorResponse, Cart]] =
     session
     .selectOne("SELECT * from carts WHERE id = ?", id)
-    .map(_.toRight(ErrorResponse(404, "Not found", s"Cart not found with id =$id")))
+    .map(_.toRight(CartNotFound))
     .map(_.map(rowToCart))
 }

@@ -4,6 +4,7 @@ import java.util.UUID
 
 import akka.NotUsed
 import ca.cbotek.item.api._
+import ca.cbotek.item.impl.ServiceErrors._
 import ca.cbotek.item.impl.command._
 import ca.cbotek.item.impl.entity.{CartEntity, ItemInventoryEntity}
 import ca.cbotek.item.impl.readside.CartRepository
@@ -101,13 +102,13 @@ class ItemServiceImpl(registry: PersistentEntityRegistry,
         .map(_.marshall)
     )
 
-  private def checkItemIdsExist(itemIds: Set[UUID]): Future[Either[ErrorResponse, Catalog]] =
+  private def checkItemIdsExist(itemIds: Set[UUID]): Future[Either[ServiceError, Catalog]] =
     refForInventory
       .ask(GetInventory)
       .map(inventory =>
         if (inventory.items.map(_.id).intersect(itemIds).size == itemIds.size) {
           Right(Catalog(inventory.items, inventory.bundles))
         } else {
-          Left(ErrorResponse(400, "Bad Request", "Item(s) not in catalog."))
+          Left(ItemsNotFoundInInventory)
         })
 }

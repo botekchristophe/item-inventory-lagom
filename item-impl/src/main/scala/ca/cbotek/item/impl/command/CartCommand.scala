@@ -3,7 +3,7 @@ package ca.cbotek.item.impl.command
 import java.util.UUID
 
 import ca.cbotek.item.api.{Cart, CartItem}
-import ca.cbotek.shared.ErrorResponse
+import ca.cbotek.item.impl.ServiceErrors.ServiceError
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntity.ReplyType
 import play.api.libs.json.{Format, Json}
 
@@ -11,17 +11,17 @@ sealed trait CartCommand[R] extends ReplyType[R]
 
 case class CreateCart(id: UUID,
                       user: String,
-                      items: Set[CartItem]) extends CartCommand[Either[ErrorResponse, Cart]]
+                      items: Set[CartItem]) extends CartCommand[Either[ServiceError, Cart]]
 object CreateCart {
   implicit val format: Format[CreateCart] = Json.format[CreateCart]
 }
 
-case class SetItemToCart(id: UUID, itemId: UUID, quantity: Int) extends CartCommand[Either[ErrorResponse, Cart]]
+case class SetItemToCart(id: UUID, itemId: UUID, quantity: Int) extends CartCommand[Either[ServiceError, Cart]]
 object SetItemToCart {
   implicit val format: Format[SetItemToCart] = Json.format[SetItemToCart]
 }
 
-case class CheckoutCart(id: UUID, price: Double) extends CartCommand[Either[ErrorResponse, Cart]]
+case class CheckoutCart(id: UUID, price: Double) extends CartCommand[Either[ServiceError, Cart]]
 object CheckoutCart {
   implicit val format: Format[CheckoutCart] = Json.format[CheckoutCart]
 }
