@@ -14,9 +14,11 @@ object ItemSerializerRegistry extends JsonSerializerRegistry {
     JsonSerializer[DeleteItem],
     JsonSerializer[AddBundle],
     JsonSerializer[DeleteBundle],
+    JsonSerializer[GetInventory.type],
     JsonSerializer[CreateCart],
     JsonSerializer[SetItemToCart],
     JsonSerializer[CheckoutCart],
+    JsonSerializer[GetOneCart.type],
     // Event
     JsonSerializer[ItemAdded],
     JsonSerializer[ItemDeleted],

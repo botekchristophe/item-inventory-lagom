@@ -84,8 +84,8 @@ class ItemServiceImpl(registry: PersistentEntityRegistry,
 
   override def checkout(id: UUID): ServiceCall[NotUsed, Either[ErrorResponse, CartCheckout]] =
     ServerServiceCall((_, _) =>
-      cartRepository
-        .getOneCart(id)
+      refForCart(id)
+        .ask(GetOneCart)
         .flatMap(_.fold[Future[Either[ErrorResponse, CartCheckout]]](
           e => Future.successful(Left(e)),
           cart =>

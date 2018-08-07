@@ -4,6 +4,7 @@ import java.util.UUID
 
 import ca.cbotek.item.api.{Cart, CartItem}
 import ca.cbotek.item.impl.ServiceErrors.ServiceError
+import ca.cbotek.shared.JsonFormats.singletonFormat
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntity.ReplyType
 import play.api.libs.json.{Format, Json}
 
@@ -25,3 +26,8 @@ case class CheckoutCart(id: UUID, price: Double) extends CartCommand[Either[Serv
 object CheckoutCart {
   implicit val format: Format[CheckoutCart] = Json.format[CheckoutCart]
 }
+
+case object GetOneCart extends CartCommand[Either[ServiceError, Cart]] {
+  implicit val format: Format[GetOneCart.type] = singletonFormat(GetOneCart)
+}
+

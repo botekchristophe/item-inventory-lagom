@@ -43,16 +43,17 @@ its list of items cannot be updated.
 
 ## Usage
 
-In order to start the project, sbt needs to be available. It can be downloaded here: https://www.scala-sbt.org/download.html
+In order to start the project, sbt needs to be available. It can be downloaded here: 
+https://www.scala-sbt.org/download.html.
+
 One can run the project by running the following line in a terminal: 
 ```sbtshell
 sbt clean runAll
 ```
-In order to make the project easier to use a *postman* collection is available in `/postman` folder.
 
-## Test coverage
+## Unit tests
 
-In order to check the application unit test coverage, `scoverage` plugin is added to plugin.sbt file.
+In order to check the application unit test coverage, `scoverage` plugin is added to `/project/plugins.sbt` file.
 
 To see the coverage results:
 ```scala
@@ -63,10 +64,43 @@ sbt coverageReport
 Here are the latest results:
 
 ```sbtshell
-[info] Statement coverage.: 69.84%
-[info] Branch coverage....: 87.50%
+[info] Statement coverage.: 80.66%
+[info] Branch coverage....: 75.00%
 [info] Coverage reports completed
-[info] All done. Coverage was [69.84%]
+[info] All done. Coverage was [80.66%]
 ```
+
+## Regression tests
+
+As regression test suite is available in `regression_tests/postman.collection.json`. It covers basic behaviour of the API
+including HTTP status of the responses and some of the most important fields.
+
+In order to run the regression test suite, these options are available:
+- Download newman plugin and run the collection in the terminal (https://www.npmjs.com/package/newman#getting-started)
+- Use Postman desktop or Chrome extension and import the collection (https://www.getpostman.com/apps)
+
+Here are the latest results:
+```sbtshell
+┌─────────────────────────┬──────────┬──────────┐
+│                         │ executed │   failed │
+├─────────────────────────┼──────────┼──────────┤
+│              iterations │        1 │        0 │
+├─────────────────────────┼──────────┼──────────┤
+│                requests │       12 │        0 │
+├─────────────────────────┼──────────┼──────────┤
+│            test-scripts │       12 │        0 │
+├─────────────────────────┼──────────┼──────────┤
+│      prerequest-scripts │        0 │        0 │
+├─────────────────────────┼──────────┼──────────┤
+│              assertions │       17 │        0 │
+├─────────────────────────┴──────────┴──────────┤
+│ total run duration: 566ms                     │
+├───────────────────────────────────────────────┤
+│ total data received: 1.58KB (approx)          │
+├───────────────────────────────────────────────┤
+│ average response time: 22ms                   │
+└───────────────────────────────────────────────┘
+```
+
 
 ##### Feel free to comment and/or submit a PR

@@ -1,13 +1,9 @@
 package ca.cbotek.item.impl.readside
 
-import java.util.UUID
-
 import ca.cbotek.item.api.{Cart, CartItem}
-import ca.cbotek.shared.ErrorResponse
 import com.datastax.driver.core.Row
 import com.lightbend.lagom.scaladsl.persistence.cassandra.CassandraSession
 import play.api.libs.json.{Format, Json}
-import ca.cbotek.item.impl.ServiceErrors._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Try
@@ -31,10 +27,4 @@ class CartRepository(session: CassandraSession)(implicit ec: ExecutionContext) {
     session
       .selectAll("SELECT * from carts")
       .map(_.map(rowToCart))
-
-  def getOneCart(id: UUID): Future[Either[ErrorResponse, Cart]] =
-    session
-    .selectOne("SELECT * from carts WHERE id = ?", id)
-    .map(_.toRight(CartNotFound))
-    .map(_.map(rowToCart))
 }

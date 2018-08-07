@@ -1,0 +1,563 @@
+{
+  "info": {
+    "_postman_id": "f1640222-46f3-7a2a-c43e-c9b711d6c63a",
+    "name": "Item Inventory - test collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [{
+    "name": "get Catalog",
+    "event": [{
+      "listen": "test",
+      "script": {
+        "id": "2d94657e-aa2f-46f0-a296-c9d1ea77b71e",
+        "type": "text/javascript",
+        "exec": [
+          "pm.test(\"Status code is 200\", function () {",
+          "    pm.response.to.have.status(200);",
+          "});"
+        ]
+      }
+    }],
+    "request": {
+      "auth": {
+        "type": "noauth"
+      },
+      "method": "GET",
+      "header": [{
+        "key": "",
+        "value": "",
+        "disabled": true
+      },
+        {
+          "key": "Content-Type",
+          "value": "text/plain",
+          "disabled": true
+        }
+      ],
+      "body": {
+        "mode": "raw",
+        "raw": ""
+      },
+      "url": {
+        "raw": "http://localhost:9000/api/rest/catalog",
+        "protocol": "http",
+        "host": [
+          "localhost"
+        ],
+        "port": "9000",
+        "path": [
+          "api",
+          "rest",
+          "catalog"
+        ]
+      }
+    },
+    "response": []
+  },
+    {
+      "name": "add Item",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "id": "7a48ca69-d679-46b5-9a1f-f3b64d1751e9",
+          "type": "text/javascript",
+          "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});",
+            "",
+            "pm.test(\"Checking/setting itemId\", function () {",
+            "    var jsonData = pm.response.json();",
+            "    pm.environment.set(\"itemId\", jsonData.id)",
+            "    pm.expect(pm.response.text()).to.include(\"id\");",
+            "});"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+          {
+            "key": "",
+            "value": "",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\"name\": \"BlackDiamond - Black Carabiner\",\n\t\"description\": \"Amazing carabiner\",\n\t\"price\": 20\n}"
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/items",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "items"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add item conflict",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "id": "0e517b29-76b5-4221-a1fc-76cf9fe15a59",
+          "type": "text/javascript",
+          "exec": [
+            "pm.test(\"Status code is 409\", function () {",
+            "    pm.response.to.have.status(409);",
+            "});"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+          {
+            "key": "",
+            "value": "",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\"name\": \"BlackDiamond - Black Carabiner\",\n\t\"description\": \"Amazing carabiner\",\n\t\"price\": 20\n}"
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/items",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "items"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add bundle",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "id": "ebeb1126-692c-4317-a1a0-9a220c9edc3d",
+          "type": "text/javascript",
+          "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});",
+            "",
+            "pm.test(\"Checking/setting bundleId\", function () {",
+            "    var jsonData = pm.response.json();",
+            "    pm.environment.set(\"bundleId\", jsonData.id)",
+            "    pm.expect(pm.response.text()).to.include(\"id\");",
+            "});"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{
+          "key": "Content-Type",
+          "value": "application/json"
+        },
+          {
+            "key": "",
+            "value": "",
+            "disabled": true
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\"name\": \"BlackDiamond - RED Carabiner 30 pack\",\n\t\"items\": [{\n\t\t\"quantity\": 30,\n\t\t\"itemId\": \"{{itemId}}\"\n\t\t}],\n\t\"price\": 299.99\n}"
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/bundles",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "bundles"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "add bundle conflict",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "id": "6a3d0971-b611-4784-b50b-019468491e99",
+          "type": "text/javascript",
+          "exec": [
+            "pm.test(\"Status code is 409\", function () {",
+            "    pm.response.to.have.status(409);",
+            "});"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{
+          "key": "Content-Type",
+          "value": "application/json"
+        }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\"name\": \"BlackDiamond - RED Carabiner 30 pack\",\n\t\"items\": [{\n\t\t\"quantity\": 30,\n\t\t\"itemId\": \"{{itemId}}\"\n\t\t}],\n\t\"price\": 299.99\n}"
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/bundles",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "bundles"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "get carts",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "id": "6eb77653-cdd9-4497-ab6e-50b2c37819ce",
+          "type": "text/javascript",
+          "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});"
+          ]
+        }
+      }],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "GET",
+        "header": [{
+          "key": "Content-Type",
+          "value": "text/plain",
+          "disabled": true
+        }],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/carts",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "carts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "create cart",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "id": "1f8f054a-6187-445d-ae16-aec50237c412",
+          "type": "text/javascript",
+          "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});",
+            "",
+            "pm.test(\"Checking/setting cartId\", function () {",
+            "    var jsonData = pm.response.json();",
+            "    pm.environment.set(\"cartId\", jsonData.id)",
+            "    pm.expect(pm.response.text()).to.include(\"id\");",
+            "});"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{
+          "key": "Content-Type",
+          "value": "application/json"
+        }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n\t\"user\": \"cbotek\",\n\t\"items\": [{\n\t\t\"itemId\": \"{{itemId}}\",\n\t\t\"quantity\": 50\n\t}]\n}"
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/carts",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "carts"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "set item to cart",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "id": "313a96ae-2155-479f-8d1b-eccfed3b7aa5",
+          "type": "text/javascript",
+          "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});",
+            "",
+            "pm.test(\"Checking/setting cartId\", function () {",
+            "    var jsonData = pm.response.json();",
+            "    pm.environment.set(\"cartId\", jsonData.id)",
+            "    pm.expect(pm.response.text()).to.include(\"id\");",
+            "});"
+          ]
+        }
+      }],
+      "request": {
+        "auth": {
+          "type": "noauth"
+        },
+        "method": "PUT",
+        "header": [{
+          "key": "Content-Type",
+          "value": "text/plain",
+          "disabled": true
+        }],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/carts/{{cartId}}/items/{{itemId}}/quantity/100",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "carts",
+            "{{cartId}}",
+            "items",
+            "{{itemId}}",
+            "quantity",
+            "100"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "optimize cart",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "id": "e5f34ef9-c1d5-43a4-9ce3-f5dfeaf9ede5",
+          "type": "text/javascript",
+          "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});",
+            "",
+            "pm.test(\"Checking price value\", function () {",
+            "    var data = JSON.parse(responseBody);",
+            "    data.price == 1099.97;",
+            "});"
+          ]
+        }
+      }],
+      "request": {
+        "method": "POST",
+        "header": [{
+          "key": "Content-Type",
+          "value": "application/json"
+        }],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/carts/{{cartId}}/checkout",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "carts",
+            "{{cartId}}",
+            "checkout"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "delete Item before bundle",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "id": "2c8ff10c-efe3-4c7a-921e-e547106616ce",
+          "type": "text/javascript",
+          "exec": [
+            "pm.test(\"Status code is 400\", function () {",
+            "    pm.response.to.have.status(400);",
+            "});"
+          ]
+        }
+      }],
+      "request": {
+        "method": "DELETE",
+        "header": [{
+          "key": "Content-Type",
+          "value": "application/json"
+        }],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/items/{{itemId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "items",
+            "{{itemId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "delete bundle",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "id": "986ee59b-9c3e-4236-bbc6-a8673705837a",
+          "type": "text/javascript",
+          "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});"
+          ]
+        }
+      }],
+      "request": {
+        "method": "DELETE",
+        "header": [{
+          "key": "Content-Type",
+          "value": "application/json"
+        }],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/bundles/{{bundleId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "bundles",
+            "{{bundleId}}"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "delete Item",
+      "event": [{
+        "listen": "test",
+        "script": {
+          "id": "f3e67169-de67-4576-88ce-85d499158ffb",
+          "type": "text/javascript",
+          "exec": [
+            "pm.test(\"Status code is 200\", function () {",
+            "    pm.response.to.have.status(200);",
+            "});"
+          ]
+        }
+      }],
+      "request": {
+        "method": "DELETE",
+        "header": [{
+          "key": "Content-Type",
+          "value": "application/json"
+        }],
+        "body": {
+          "mode": "raw",
+          "raw": ""
+        },
+        "url": {
+          "raw": "http://localhost:9000/api/rest/items/{{itemId}}",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "9000",
+          "path": [
+            "api",
+            "rest",
+            "items",
+            "{{itemId}}"
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
