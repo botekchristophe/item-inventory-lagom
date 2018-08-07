@@ -1,0 +1,10 @@
+language: scala
+dist: trusty
+sudo: required
+jdk:
+  - oraclejdk8
+script:
+  - sbt test
+cache:
+  directories:
+    - $HOME/.ivy2/cache
