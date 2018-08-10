@@ -42,5 +42,4 @@ abstract class ItemApplication(context: LagomApplicationContext)
 
   lazy val itemService: ItemService = serviceClient.implement[ItemService]
   lazy val cartRepository: CartRepository = wire[CartRepository]
-  //wire[ItemInventoryInit]
 }

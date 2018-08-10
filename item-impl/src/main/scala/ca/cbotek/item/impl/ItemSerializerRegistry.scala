@@ -7,6 +7,11 @@ import com.lightbend.lagom.scaladsl.playjson.{JsonSerializer, JsonSerializerRegi
 
 import scala.collection.immutable.Seq
 
+/**
+  * Json serializer used instead of default Java serialization.
+  *
+  * All commands, events and classes used by persistence entities MUST be added in this serializer.
+  */
 object ItemSerializerRegistry extends JsonSerializerRegistry {
   override def serializers: Seq[JsonSerializer[_]] = Seq(
     // Command

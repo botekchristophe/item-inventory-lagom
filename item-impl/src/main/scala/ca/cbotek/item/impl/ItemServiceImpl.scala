@@ -2,7 +2,7 @@ package ca.cbotek.item.impl
 
 import java.util.UUID
 
-import akka.NotUsed
+import akka.{Done, NotUsed}
 import ca.cbotek.item.api._
 import ca.cbotek.item.impl.ServiceErrors._
 import ca.cbotek.item.impl.command._
@@ -20,7 +20,21 @@ class ItemServiceImpl(registry: PersistentEntityRegistry,
                       cartRepository: CartRepository)
                      (implicit ec: ExecutionContext) extends ItemService with Marshaller {
 
-  private def refForInventory = registry.refFor[ItemInventoryEntity]("item-inventory")
+  /**
+    * [[ItemInventoryEntity]] is a singleton and its ID is defined in application.conf file.
+    *
+    * @return Returns a reference to the entity holding the inventory.
+    */
+  private def refForInventory = registry.refFor[ItemInventoryEntity](itemInventoryEntityName)
+
+  /**
+    * [[CartEntity]] is a persistence entity of a Cart. Each user cart state is held by a different entity.
+    * In order to access a cart entity, one needs to provide the cart id as a [[UUID]].
+    * The cart unique id and the cart entity will both use the exact same [[UUID]] in the write and read sides.
+    *
+    * @param id the cart id
+    * @return a reference on a cart entity defined by its [[UUID]]
+    */
   private def refForCart(id: UUID) = registry.refFor[CartEntity](id.toString)
 
   override def getCatalog: ServiceCall[NotUsed, Catalog] =
@@ -73,7 +87,7 @@ class ItemServiceImpl(registry: PersistentEntityRegistry,
   override def setQuantityForCartItem(cartId: UUID, itemId: UUID, quantity: Int): ServiceCall[NotUsed, Either[ErrorResponse, Cart]] =
     ServerServiceCall((_, _) =>
       Right(quantity)
-        .filterOrElse(qtt => qtt >= 0, ErrorResponse(400, "Bad request", "Quantity cannot be negative."))
+        .filterOrElse(qtt => qtt >= 0, ItemNegativeQuantity)
         .fold(
           e => Future.successful(Left(e)),
           _ => checkItemIdsExist(Set(itemId)).flatMap(_.fold(
@@ -103,12 +117,12 @@ class ItemServiceImpl(registry: PersistentEntityRegistry,
         .map(_.marshall)
     )
 
-  private def checkItemIdsExist(itemIds: Set[UUID]): Future[Either[ServiceError, Catalog]] =
+  private def checkItemIdsExist(itemIds: Set[UUID]): Future[Either[ServiceError, Done]] =
     refForInventory
       .ask(GetInventory)
       .map(inventory =>
         if (inventory.items.map(_.id).intersect(itemIds).size == itemIds.size) {
-          Right(Catalog(inventory.items, inventory.bundles))
+          Right(Done)
         } else {
           Left(ItemsNotFoundInInventory)
         })
