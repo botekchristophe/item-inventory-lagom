@@ -1,5 +1,7 @@
 package ca.cbotek.item.api
 
+import ca.cbotek.item.api.bundle.Bundle
+import ca.cbotek.item.api.item.Item
 import play.api.libs.json._
 
 /**

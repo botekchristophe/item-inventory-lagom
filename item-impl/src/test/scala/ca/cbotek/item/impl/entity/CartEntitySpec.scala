@@ -4,11 +4,11 @@ import java.util.UUID
 
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
-import ca.cbotek.item.api.{Cart, CartItem}
+import ca.cbotek.item.api.cart.{Cart, CartBundle, CartItem}
 import ca.cbotek.item.impl.ItemSerializerRegistry
 import ca.cbotek.item.impl.ServiceErrors._
-import ca.cbotek.item.impl.command.{CartCommand, CheckoutCart, CreateCart, SetItemToCart}
-import ca.cbotek.item.impl.event.{CartCheckedout, CartCreated, CartEvent, CartItemsUpdated}
+import ca.cbotek.item.impl.command.{CartCommand, CheckoutCart, CreateCart, UpdateCart}
+import ca.cbotek.item.impl.event.{CartCheckedOut, CartCreated, CartEvent, CartUpdated}
 import ca.cbotek.item.impl.model.{CartState, CartStatuses}
 import com.lightbend.lagom.scaladsl.playjson.JsonSerializerRegistry
 import com.lightbend.lagom.scaladsl.testkit.PersistentEntityTestDriver
@@ -30,24 +30,22 @@ object CartEntityMock {
 
   // Mock for Cart states
   final val cartEmptyState: Option[CartState] = None
-  final val cartInUseState: CartState = CartState(cartId, cartUser, cartItems, CartStatuses.IN_USE)
+  final val cartInUseState: CartState = CartState(cartId, cartUser, cartItems, Set.empty[CartBundle], CartStatuses.IN_USE)
   final val cartInUseStateWithUpdate: CartState = cartInUseState.copy(items = cartItemsWithNewQuantity)
   final val cartCheckedoutState: CartState = cartInUseState.copy(status = CartStatuses.CHECKED_OUT)
 
   // Mock for Cart command, response and events
-  final val createCartCommand: CreateCart = CreateCart(cartId, cartUser, cartItems)
-  final val createCartResponse: Cart = Cart(cartId, cartUser, cartItems, CartStatuses.IN_USE.toString)
-  final val cartCreated: CartCreated = CartCreated(cartId, cartUser, cartItems)
+  final val createCartCommand: CreateCart = CreateCart(cartId, cartUser, cartItems, Set.empty[CartBundle])
+  final val createCartResponse: Cart = Cart(cartId, cartUser, cartItems, Set.empty[CartBundle])
+  final val cartCreated: CartCreated = CartCreated(cartId, cartUser, cartItems, Set.empty[CartBundle])
 
-  final val setItemToCartCommand: SetItemToCart = SetItemToCart(cartId, cartItem1.itemId, setItemNewQuantity)
-  final val setItemToCartResponse: Cart = Cart(cartId, cartUser, cartItemsWithNewQuantity, CartStatuses.IN_USE.toString)
-  final val cartItemsUpdated: CartItemsUpdated = CartItemsUpdated(cartId, cartItemsWithNewQuantity)
+  final val setItemToCartCommand: UpdateCart = UpdateCart(cartId, Set(cartItem1), Set.empty[CartBundle])
+  final val setItemToCartResponse: Cart = Cart(cartId, cartUser, Set(cartItem1), Set.empty[CartBundle])
+  final val cartItemsUpdated: CartUpdated = CartUpdated(cartId, Set(cartItem1), Set.empty[CartBundle])
 
-  final val checkoutCartCommand: CheckoutCart = CheckoutCart(cartId, checkoutPrice)
-  final val checkoutCartResponse: Cart = createCartResponse.copy(
-    status = CartStatuses.CHECKED_OUT.toString,
-    checkout_price = Some(checkoutPrice))
-  final val cartCheckedout: CartCheckedout = CartCheckedout(cartId, checkoutPrice)
+  final val checkoutCartCommand: CheckoutCart = CheckoutCart(cartId)
+  final val checkoutCartResponse: Cart = createCartResponse
+  final val cartCheckedout: CartCheckedOut = CartCheckedOut(cartId)
 }
 
 class CartEntitySpec extends WordSpec with Matchers with BeforeAndAfterAll {

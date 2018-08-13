@@ -3,6 +3,9 @@ package ca.cbotek.item.impl
 import java.util.UUID
 
 import ca.cbotek.item.api._
+import ca.cbotek.item.api.bundle.{Bundle, BundleItem, BundleRequest, BundleRequestItem}
+import ca.cbotek.item.api.cart._
+import ca.cbotek.item.api.item.{Item, ItemRequest}
 import com.lightbend.lagom.scaladsl.server.LocalServiceLocator
 import com.lightbend.lagom.scaladsl.testkit.ServiceTest
 import org.scalatest.{AsyncWordSpec, BeforeAndAfterAll, Matchers}
@@ -41,7 +44,7 @@ class ItemServiceImplSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
 
     "Accept invoking create item endpoint" in {
       client
-        .addItem
+        .addItemToInventory
         .invoke(itemRequest)
         .map { response =>
         response.isRight shouldBe true
@@ -50,7 +53,7 @@ class ItemServiceImplSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
 
     "Reject invoking create item endpoint with negative price" in {
       client
-        .addItem
+        .addItemToInventory
         .invoke(itemRequest.copy(price = -1.0))
         .recover { case _: Throwable => Left("Deserialization failed") }
         .map { response =>
@@ -60,7 +63,7 @@ class ItemServiceImplSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
 
     "Reject invoking create item endpoint with empty name" in {
       client
-        .addItem
+        .addItemToInventory
         .invoke(itemRequest.copy(name = ""))
         .recover { case _: Throwable => Left("Deserialization failed") }
         .map { response =>
@@ -68,10 +71,10 @@ class ItemServiceImplSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
       }
     }
 
-    "Reject invoking create bundle endpoint with negative price" in {
+    "Reject invoking create bundle endpoint with negative average discount" in {
       client
-        .addBundle
-        .invoke(bundleRequest.copy(price = -1.0))
+        .addBundleToInventory
+        .invoke(bundleRequest.copy(average_discount = -1.0))
         .recover { case _: Throwable => Left("Deserialization failed") }
         .map { response =>
         response.isLeft shouldBe true
@@ -80,7 +83,7 @@ class ItemServiceImplSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
 
     "Reject invoking create bundle endpoint with empty name" in {
       client
-        .addBundle
+        .addBundleToInventory
         .invoke(bundleRequest.copy(name = ""))
         .recover { case _: Throwable => Left("Deserialization failed") }
         .map { response =>
@@ -90,7 +93,7 @@ class ItemServiceImplSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
 
     "Reject invoking delete item with randomUUID" in {
       client
-        .removeItem(UUID.randomUUID())
+        .removeItemFromInventory(UUID.randomUUID())
         .invoke
         .recover { case _: Throwable => Left("item not found") }
         .map { response =>
@@ -100,7 +103,7 @@ class ItemServiceImplSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
 
     "Reject invoking delete bundle with randomUUID" in {
       client
-        .removeBundle(UUID.randomUUID())
+        .removeBundleFromInventory(UUID.randomUUID())
         .invoke
         .recover { case _: Throwable => Left("bundle not found") }
         .map { response =>
@@ -111,7 +114,7 @@ class ItemServiceImplSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
     "Accept invoking create cart endpoint with empty Cart" in {
       client
         .createCart
-        .invoke(CartRequest("user", Set.empty[CartItem]))
+        .invoke(CartCreateRequest("user", Set.empty[CartItem], Set.empty[CartBundle]))
         .flatMap { response =>
           response.isRight shouldBe true
         }
@@ -119,18 +122,8 @@ class ItemServiceImplSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
 
     "Reject invoking setItemToCart cart with randomUUID" in {
       client
-        .setQuantityForCartItem(UUID.randomUUID(), UUID.randomUUID(), 1)
-        .invoke
-        .recover { case _: Throwable => Left("bundle not found") }
-        .map { response =>
-          response.isLeft shouldBe true
-        }
-    }
-
-    "Reject invoking setItemToCart cart with negative quantity" in {
-      client
-        .setQuantityForCartItem(UUID.randomUUID(), UUID.randomUUID(), -1)
-        .invoke
+        .setItemsAndBundleToCart(UUID.randomUUID())
+        .invoke(CartUpdateRequest(Set.empty, Set.empty))
         .recover { case _: Throwable => Left("bundle not found") }
         .map { response =>
           response.isLeft shouldBe true
@@ -139,7 +132,7 @@ class ItemServiceImplSpec extends AsyncWordSpec with Matchers with BeforeAndAfte
 
     "Reject invoking checkout cart with randomUUID" in {
       client
-        .checkout(UUID.randomUUID())
+        .checkoutCart(UUID.randomUUID())
         .invoke
         .recover { case _: Throwable => Left("bundle not found") }
         .map { response =>

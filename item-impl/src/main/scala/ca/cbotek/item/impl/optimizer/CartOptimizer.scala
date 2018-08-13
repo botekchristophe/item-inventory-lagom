@@ -1,6 +1,8 @@
 package ca.cbotek.item.impl.optimizer
 
-import ca.cbotek.item.api._
+import ca.cbotek.item.api
+import ca.cbotek.item.api.bundle.{Bundle, BundleItem}
+import ca.cbotek.item.api.cart.{Cart, CartItem}
 import ca.cbotek.item.impl.model.ItemInventoryState
 import org.slf4j.LoggerFactory
 
@@ -21,7 +23,7 @@ object CartOptimizer {
     * @param bundles set of bundles available to optimize the cart.
     * @return an Optimized cart
     */
-  def optimizeCart(cart: CartCheckout, bundles: Set[Bundle]): CartCheckout = {
+  def optimizeCart(cart: Cart, bundles: Set[Bundle]): Cart = {
     bundles
       .filterNot(bundle => bundleItemsNotInCartItems(bundle, cart))
       .toList.sortBy(_.price).reverse match {
@@ -50,19 +52,19 @@ object CartOptimizer {
   /**
     * For this method, `intersect` is preferred from a combination of `forAll ... contains` due to computation speed.
     */
-  private def bundleItemsNotInCartItems(bundle: Bundle, cart: CartCheckout): Boolean =
+  private def bundleItemsNotInCartItems(bundle: Bundle, cart: Cart): Boolean =
     bundle.items.map(_.item.id).intersect(cart.items.map(_.itemId)).size != bundle.items.map(_.item.id).size
 
   /**
     * This method checks whether the cart contains enough items compared to bundles items.
     */
-  private def cartContainsEnoughItemsToUseBundle(bi: BundleItem, cart: CartCheckout): Boolean =
+  private def cartContainsEnoughItemsToUseBundle(bi: BundleItem, cart: Cart): Boolean =
     cart.items.exists(ci => ci.itemId == bi.item.id && ci.quantity >= bi.quantity)
 
   /**
     * apply the selected bundle to the cart items and return the new set of items.
     */
-  private def removeBundleItemsFromCart(bundle: Bundle, cart: CartCheckout): Set[CartItem] =
+  private def removeBundleItemsFromCart(bundle: Bundle, cart: Cart): Set[CartItem] =
     cart
       .items
       .map(i => i.copy(quantity = i.quantity - bundle.items.find(_.item.id == i.itemId).map(_.quantity).getOrElse(0)))
@@ -71,22 +73,22 @@ object CartOptimizer {
   /**
     * apply the selected bundle to the cart bundle and return the set of bundles
     */
-  private def addBundleToCart(bundle: Bundle, cart: CartCheckout): Set[CartBundle] =
+  private def addBundleToCart(bundle: Bundle, cart: Cart): Set[api.cart.CartBundle] =
     cart
       .bundles
       .find(_.bundleId == bundle.id)
-      .fold[Set[CartBundle]](
-      cart.bundles + CartBundle(bundle.id, 1))(
-      cb => cart.bundles.filterNot(_.bundleId == cb.bundleId) + CartBundle(cb.bundleId, cb.quantity + 1))
+      .fold[Set[api.cart.CartBundle]](
+      cart.bundles + api.cart.CartBundle(bundle.id, 1))(
+      cb => cart.bundles.filterNot(_.bundleId == cb.bundleId) + api.cart.CartBundle(cb.bundleId, cb.quantity + 1))
 
   /**
     * Based on current cart and inventory, compute the cart total price.
     */
-  def computeCartPrice(cart: CartCheckout, inv: ItemInventoryState): CartCheckout = {
+  def computeCartPrice(cart: Cart, inv: ItemInventoryState): Cart = {
     val itemsPrice: Double =
       cart.items.map(i => i.quantity.toDouble * inv.items.find(_.id == i.itemId).map(_.price).getOrElse(0.0)).sum
     val bundlesPrice: Double =
       cart.bundles.map(b => b.quantity.toDouble * inv.bundles.find(_.id == b.bundleId).map(_.price).getOrElse(0.0)).sum
-    cart.copy(price = itemsPrice + bundlesPrice)
+    cart.copy(price = Some(itemsPrice + bundlesPrice))
   }
 }

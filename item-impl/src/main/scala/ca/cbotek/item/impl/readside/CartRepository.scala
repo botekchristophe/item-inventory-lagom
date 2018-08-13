@@ -1,6 +1,7 @@
 package ca.cbotek.item.impl.readside
 
-import ca.cbotek.item.api.{Cart, CartItem}
+import ca.cbotek.item.api.bundle.BundleItem
+import ca.cbotek.item.api.cart.{Cart, CartBundle, CartItem}
 import com.datastax.driver.core.Row
 import com.lightbend.lagom.scaladsl.persistence.cassandra.CassandraSession
 import play.api.libs.json.{Format, Json}
@@ -40,8 +41,12 @@ class CartRepository(session: CassandraSession)(implicit ec: ExecutionContext) {
           .toOption
           .flatten
           .getOrElse(Set.empty[CartItem]),
-      status = row.getString("status"),
-      checkout_price = Try(row.getString("checkout_price").toDouble).toOption
+      bundles =
+        Try(implicitly[Format[Set[CartBundle]]].reads(Json.parse(row.getString("bundles"))).asOpt)
+          .toOption
+          .flatten
+          .getOrElse(Set.empty[CartBundle]),
+      price = Try(row.getString("price").toDouble).toOption
     )
 
   /**

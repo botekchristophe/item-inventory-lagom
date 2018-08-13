@@ -2,7 +2,7 @@ package ca.cbotek.item.impl.command
 
 import java.util.UUID
 
-import ca.cbotek.item.api.{Cart, CartItem}
+import ca.cbotek.item.api.cart.{Cart, CartBundle, CartItem}
 import ca.cbotek.item.impl.ServiceErrors.ServiceError
 import ca.cbotek.shared.JsonFormats.singletonFormat
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntity.ReplyType
@@ -25,29 +25,33 @@ sealed trait CartCommand[R] extends ReplyType[R]
   *
   * @param id id the the cart.
   * @param user user owning the cart.
-  * @param items items belonging to the car.
+  * @param items items added to the cart.
+  * @param bundles bundles added to the cart.
   */
 case class CreateCart(id: UUID,
                       user: String,
-                      items: Set[CartItem]) extends CartCommand[Either[ServiceError, Cart]]
+                      items: Set[CartItem],
+                      bundles: Set[CartBundle]) extends CartCommand[Either[ServiceError, Cart]]
 object CreateCart {
   implicit val format: Format[CreateCart] = Json.format[CreateCart]
 }
 
 /**
-  * This command will set an item with a specific quantity to the cart if the command is valid.
+  * This command will set a new set of items and bundles for the cart.
   *
   * Command is invalid if the cart does not exists or if the cart is already checked out.
   *
-  * Will persist an event [[ca.cbotek.item.impl.event.CartItemsUpdated]] if the command is accepted.
+  * Will persist an event [[ca.cbotek.item.impl.event.CartUpdated]] if the command is accepted.
   *
   * @param id unique identifier of the cart.
-  * @param itemId unique identifier of the item.
-  * @param quantity requested new quantity for the item.
+  * @param items new set of items for the cart.
+  * @param bundles new set of bundles for the cart.
   */
-case class SetItemToCart(id: UUID, itemId: UUID, quantity: Int) extends CartCommand[Either[ServiceError, Cart]]
-object SetItemToCart {
-  implicit val format: Format[SetItemToCart] = Json.format[SetItemToCart]
+case class UpdateCart(id: UUID,
+                      items: Set[CartItem],
+                      bundles: Set[CartBundle]) extends CartCommand[Either[ServiceError, Cart]]
+object UpdateCart {
+  implicit val format: Format[UpdateCart] = Json.format[UpdateCart]
 }
 
 /**
@@ -55,12 +59,11 @@ object SetItemToCart {
   *
   * Command is invalid if the cart does not exists or if the cart is already checked out.
   *
-  * Will persist an event [[ca.cbotek.item.impl.event.CartCheckedout]] if the command is accepted.
+  * Will persist an event [[ca.cbotek.item.impl.event.CartCheckedOut]] if the command is accepted.
   *
   * @param id unique identifier of the cart.
-  * @param price checked out price of the cart.
   */
-case class CheckoutCart(id: UUID, price: Double) extends CartCommand[Either[ServiceError, Cart]]
+case class CheckoutCart(id: UUID) extends CartCommand[Either[ServiceError, Cart]]
 object CheckoutCart {
   implicit val format: Format[CheckoutCart] = Json.format[CheckoutCart]
 }

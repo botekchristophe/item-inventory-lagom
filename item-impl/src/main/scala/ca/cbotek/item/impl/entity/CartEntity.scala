@@ -1,9 +1,9 @@
 package ca.cbotek.item.impl.entity
 
-import ca.cbotek.item.api.{Cart, CartItem}
+import ca.cbotek.item.api.cart.Cart
 import ca.cbotek.item.impl.ServiceErrors._
 import ca.cbotek.item.impl.command._
-import ca.cbotek.item.impl.event.{CartCheckedout, CartCreated, CartEvent, CartItemsUpdated}
+import ca.cbotek.item.impl.event.{CartCheckedOut, CartCreated, CartEvent, CartUpdated}
 import ca.cbotek.item.impl.model.{CartState, CartStatuses}
 import com.lightbend.lagom.scaladsl.persistence.PersistentEntity
 import org.slf4j.LoggerFactory
@@ -32,12 +32,12 @@ class CartEntity extends PersistentEntity {
   private def unCreated: Actions =
     Actions()
       .onCommand[CreateCart, Either[ServiceError, Cart]] { createCart }
-      .onCommand[SetItemToCart, Either[ServiceError, Cart]] { replyNotFound }
+      .onCommand[UpdateCart, Either[ServiceError, Cart]] { replyNotFound }
       .onCommand[CheckoutCart, Either[ServiceError, Cart]] { replyNotFound }
       .onCommand[GetOneCart.type, Either[ServiceError, Cart]] { replyNotFound }
       .onEvent {
-        case (CartCreated(id, user, items), _) =>
-          Some(CartState(id, user, items, CartStatuses.IN_USE))
+        case (CartCreated(id, user, items, bundles), _) =>
+          Some(CartState(id, user, items, bundles, CartStatuses.IN_USE))
         case (_, state) =>
           state
       }
@@ -45,13 +45,13 @@ class CartEntity extends PersistentEntity {
   private def inUse: Actions =
     Actions()
       .onCommand[CreateCart, Either[ServiceError, Cart]] { replyConflict }
-      .onCommand[SetItemToCart, Either[ServiceError, Cart]] { setItemToCart }
+      .onCommand[UpdateCart, Either[ServiceError, Cart]] { updateCart }
       .onCommand[CheckoutCart, Either[ServiceError, Cart]] { checkoutCart }
       .onReadOnlyCommand[GetOneCart.type, Either[ServiceError, Cart]] { getCart }
       .onEvent {
-        case (CartItemsUpdated(_, updatedItems), cartState) =>
-          cartState.map(cart => cart.copy(items = updatedItems))
-        case (CartCheckedout(_, _), cartState) =>
+        case (CartUpdated(_, updatedItems, updatedBundles), cartState) =>
+          cartState.map(cart => cart.copy(items = updatedItems, bundles = updatedBundles))
+        case (CartCheckedOut(_), cartState) =>
           cartState.map(cart => cart.copy(status = CartStatuses.CHECKED_OUT))
         case (_, state) =>
           state
@@ -60,7 +60,7 @@ class CartEntity extends PersistentEntity {
   private def checkedOut: Actions =
     Actions()
       .onCommand[CreateCart, Either[ServiceError, Cart]] { replyConflict }
-      .onCommand[SetItemToCart, Either[ServiceError, Cart]] { replyCartCheckedOut }
+      .onCommand[UpdateCart, Either[ServiceError, Cart]] { replyCartCheckedOut }
       .onCommand[CheckoutCart, Either[ServiceError, Cart]] { replyCartCheckedOut }
       .onCommand[GetOneCart.type, Either[ServiceError, Cart]] { replyCartCheckedOut }
       .onEvent {
@@ -69,30 +69,24 @@ class CartEntity extends PersistentEntity {
       }
 
   private def createCart: OnCommandHandler[Either[ServiceError, Cart]] = {
-    case (CreateCart(id, user, items), ctx, _) =>
-      ctx.thenPersist(CartCreated(id, user, items))(_ => ctx.reply(Right(Cart(id, user, items, CartStatuses.IN_USE.toString))))
+    case (CreateCart(id, user, items, bundles), ctx, _) =>
+      ctx.thenPersist(CartCreated(id, user, items, bundles))(_ => ctx.reply(Right(Cart(id, user, items, bundles))))
   }
 
-  private def setItemToCart: OnCommandHandler[Either[ServiceError, Cart]] = {
-    case (SetItemToCart(id, itemId, qtt), ctx, Some(cart)) =>
-      val updatedItems: Set[CartItem] =
-        cart
-          .items
-          .find(_.itemId == itemId)
-          .fold(cart.items + CartItem(itemId, qtt))(item => cart.items.filterNot(_.itemId == itemId) + item.copy(quantity = qtt))
-      ctx.thenPersist(CartItemsUpdated(id, updatedItems))(_ =>
-        ctx.reply(Right(Cart(id, cart.user, updatedItems, CartStatuses.IN_USE.toString))))
+  private def updateCart: OnCommandHandler[Either[ServiceError, Cart]] = {
+    case (UpdateCart(id, items, bundles), ctx, Some(cart)) =>
+      ctx.thenPersist(CartUpdated(id, items, bundles))(_ => ctx.reply(Right(Cart(id, cart.user, items, bundles))))
   }
 
   private def checkoutCart: OnCommandHandler[Either[ServiceError, Cart]] = {
-    case (CheckoutCart(id, price), ctx, Some(cart)) =>
-      ctx.thenPersist(CartCheckedout(id, price))(_ =>
-        ctx.reply(Right(Cart(id, cart.user, cart.items, CartStatuses.CHECKED_OUT.toString, Some(price)))))
+    case (CheckoutCart(id), ctx, Some(cart)) =>
+      ctx.thenPersist(CartCheckedOut(id))(_ =>
+        ctx.reply(Right(Cart(id, cart.user, cart.items, cart.bundles))))
   }
 
   private def getCart: ReadOnlyHandler[Either[ServiceError, Cart]] = {
     case (GetOneCart, ctx, Some(c)) =>
-      ctx.reply(Right(Cart(c.id, c.user, c.items, c.status.toString)))
+      ctx.reply(Right(Cart(c.id, c.user, c.items, c.bundles)))
   }
 
   private def replyNotFound[R]: OnCommandHandler[Either[ServiceError, R]] = {
@@ -109,7 +103,7 @@ class CartEntity extends PersistentEntity {
 
   private def replyCartCheckedOut[R]: OnCommandHandler[Either[ServiceError, R]] = {
     case (_, ctx, _) =>
-      ctx.reply(Left(CartCheckedOut))
+      ctx.reply(Left(CartCannotBeUpdated))
       ctx.done
   }
 }

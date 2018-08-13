@@ -21,7 +21,7 @@ object ItemSerializerRegistry extends JsonSerializerRegistry {
     JsonSerializer[DeleteBundle],
     JsonSerializer[GetInventory.type],
     JsonSerializer[CreateCart],
-    JsonSerializer[SetItemToCart],
+    JsonSerializer[UpdateCart],
     JsonSerializer[CheckoutCart],
     JsonSerializer[GetOneCart.type],
     // Event
@@ -30,8 +30,8 @@ object ItemSerializerRegistry extends JsonSerializerRegistry {
     JsonSerializer[BundleAdded],
     JsonSerializer[BundleDeleted],
     JsonSerializer[CartCreated],
-    JsonSerializer[CartItemsUpdated],
-    JsonSerializer[CartCheckedout],
+    JsonSerializer[CartUpdated],
+    JsonSerializer[CartCheckedOut],
     // Model
     JsonSerializer[ItemInventoryState],
     JsonSerializer[CartState]

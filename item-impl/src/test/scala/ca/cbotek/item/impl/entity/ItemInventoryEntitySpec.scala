@@ -4,7 +4,8 @@ import java.util.UUID
 
 import akka.actor.ActorSystem
 import akka.testkit.TestKit
-import ca.cbotek.item.api.{Bundle, BundleItem, BundleRequestItem, Item}
+import ca.cbotek.item.api.bundle.{Bundle, BundleItem, BundleRequestItem}
+import ca.cbotek.item.api.item.Item
 import ca.cbotek.item.impl.command._
 import ca.cbotek.item.impl.event._
 import ca.cbotek.item.impl.model.ItemInventoryState
@@ -23,16 +24,16 @@ object ItemInventoryMock {
 
   final val newItem: Item = randomItem
   final val addItemCommand: AddItem = AddItem(newItem.id, newItem.name, newItem.description, newItem.price)
-  final val itemAdded: ItemAdded = ItemAdded(newItem.id, newItem.name, newItem.description, newItem.price)
+  final val itemAdded: ItemAdded = ItemAdded(Item(newItem.id, newItem.name, newItem.description, newItem.price))
 
   final val deleteItem: DeleteItem = DeleteItem(newItem.id)
   final val itemDeleted: ItemDeleted = ItemDeleted(newItem.id)
 
   final val newBundleItem: BundleItem = BundleItem(randomQuantity, newItem)
-  final val newBundle: Bundle = Bundle(Set(newBundleItem))
+  final val newBundle: Bundle = Bundle(UUID.randomUUID(), "Bundle", Set(newBundleItem), 0.30)
   final val addBundle: AddBundle =
     AddBundle(newBundle.id, newBundle.name, Iterable(BundleRequestItem(newBundleItem.quantity, newBundleItem.item.id)), newBundle.price)
-  final val bundleAdded: BundleAdded = BundleAdded(newBundle.id, newBundle.name, newBundle.items, newBundle.price)
+  final val bundleAdded: BundleAdded = BundleAdded(Bundle(newBundle.id, newBundle.name, newBundle.items, newBundle.price))
 
   final val deleteBundle: DeleteBundle = DeleteBundle(newBundle.id)
   final val bundleDeleted: BundleDeleted = BundleDeleted(newBundle.id)

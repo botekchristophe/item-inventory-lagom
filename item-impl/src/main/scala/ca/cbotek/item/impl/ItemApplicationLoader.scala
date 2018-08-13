@@ -36,10 +36,16 @@ abstract class ItemApplication(context: LagomApplicationContext)
 
   // Register the JSON serializer registry
   override lazy val jsonSerializerRegistry: JsonSerializerRegistry = ItemSerializerRegistry
+
+  // register the cart entity to the persistence registry
   persistentEntityRegistry.register(wire[CartEntity])
+
+  // register the cart entity to the persistence registry
   persistentEntityRegistry.register(wire[ItemInventoryEntity])
+
+  // regiter the Cart read side processor
   readSide.register(wire[CartReadSideProcessor])
 
-  lazy val itemService: ItemService = serviceClient.implement[ItemService]
+  // instantiate and wire a Cart repository singleton
   lazy val cartRepository: CartRepository = wire[CartRepository]
 }
